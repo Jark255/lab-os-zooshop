@@ -1,0 +1,7 @@
+zooshop
+zooshop.exe
+obj/*
+.vscode/
+html/
+latex/
+rtf/
