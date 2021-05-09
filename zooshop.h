@@ -8,10 +8,9 @@ class Zooshop {
     private:
         std::string _name;
         std::vector<Animal*> _animals;
-        int _amountOfAnimals;
 
     public:
-        Zooshop();
+        Zooshop(const std::string name);
         Zooshop(const Zooshop& originalZooshop);
         ~Zooshop();
 
@@ -20,11 +19,13 @@ class Zooshop {
 
         void putAnimal(Animal* animal);
         Animal* getLastAnimal(); //< Also removes it from array
-        bool freeAnimalById(const uint id);
-        Animal* getAnimalById(const uint id);
-        int getAmountOfAnimals();
+        bool freeAnimalById(const std::size_t id);
+        std::size_t getAmountOfAnimals();
+        std::size_t getAmountOfCages();
+        std::size_t getAmountOfFreeCages();
 
-        Animal* operator[](int id);
+        Animal* operator[](std::size_t id);
         Zooshop& operator=(const Zooshop& original);
+        friend bool operator==(const Zooshop& left, const Zooshop& right);
 };
 

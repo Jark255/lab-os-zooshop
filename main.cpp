@@ -7,9 +7,9 @@ void workWithSpecificAnimal_submenu(Zooshop& zooshop) {
     int userChoice = -1;
 
     std::cout << "What is an id of animal you want to work with?" << std::endl;
-    int animalId = getChoice();
+    std::size_t animalId = getChoice();
     
-    if (animalId < 0 || animalId >= zooshop.getAmountOfAnimals()) {
+    if (animalId >= zooshop.getAmountOfAnimals()) {
         std::cout << "We don't have such an animal" << std::endl
                   << "Returning to the main menu" << std::endl;
         return;
@@ -58,7 +58,7 @@ void workWithSpecificAnimal_submenu(Zooshop& zooshop) {
 }
 
 int main() {
-    Zooshop zooshop;
+    Zooshop zooshop("The Zooshop");
 
     int userChoice = -1;
 

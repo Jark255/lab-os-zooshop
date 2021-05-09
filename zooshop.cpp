@@ -1,16 +1,13 @@
 #include "zooshop.h"
+#include <algorithm>
 #include <iostream>
 
-Zooshop::Zooshop() {
-    _name = "Zooshop";
-    _amountOfAnimals = 0;
-}
+Zooshop::Zooshop(const std::string name) { _name = name; }
 
 Zooshop::Zooshop(const Zooshop& originalZooshop) {
     _name = originalZooshop._name;
-    _amountOfAnimals = originalZooshop._amountOfAnimals;
     for (Animal* animal : originalZooshop._animals) {
-        Animal* clonedAnimal = animal;
+        Animal* clonedAnimal = animal->clone();
         _animals.push_back(clonedAnimal);
     }
 }
@@ -19,56 +16,62 @@ Zooshop::~Zooshop() {
     for (Animal* animal : _animals) {
         delete animal;
     }
-    _animals.clear();
 }
 
 void Zooshop::printStatus() {
-    std::cout<< "\"" << _name << "\":" <<std::endl;
+    std::cout << "\"" << _name << "\":" << std::endl;
 
-    int counter = 0;
-    for (Animal* animal : _animals) {
-        std::cout<< "\t" << counter++ << "." << *animal << "." << " " << std::endl; 
+    std::cout << "There are " << getAmountOfCages() << " cages, "
+              << getAmountOfFreeCages()
+              << " are free and"
+                 " in the others are:"
+              << std::endl;
+
+    const std::size_t n = getAmountOfAnimals();
+    for (std::size_t i = 0; i < n; ++i) {
+        Animal* animal = _animals[i];
+        std::cout << "\t" << i << "." << *animal << "."
+                  << " " << std::endl;
     }
 
     std::cout << std::endl;
 }
 
-void Zooshop::setName(const std::string& name) {
-    _name = name;
-}
+void Zooshop::setName(const std::string& name) { _name = name; }
 
-void Zooshop::putAnimal(Animal* animal) {
-    _animals.push_back(animal);
-    ++_amountOfAnimals;
-}
+void Zooshop::putAnimal(Animal* animal) { _animals.push_back(animal); }
 
 Animal* Zooshop::getLastAnimal() {
-    Animal* animalInHands = _animals[_amountOfAnimals-1];
+    if (_animals.empty()) {
+        return nullptr;
+    }
+
+    Animal* animalInHands = _animals.back();
     _animals.pop_back();
-    --_amountOfAnimals;
 
     return animalInHands;
 }
 
-bool Zooshop::freeAnimalById(const uint id) {
-    if (id >= (uint)_amountOfAnimals) {
+bool Zooshop::freeAnimalById(const std::size_t id) {
+    if (id >= _animals.size()) {
         return false;
     }
 
     delete _animals[id];
     _animals.erase(_animals.begin() + id);
-    --_amountOfAnimals;
 
     return true;
 }
 
-Animal* Zooshop::getAnimalById(const uint id) {
-    return _animals[id];
+std::size_t Zooshop::getAmountOfAnimals() { return _animals.size(); }
+
+std::size_t Zooshop::getAmountOfCages() { return _animals.capacity(); }
+
+std::size_t Zooshop::getAmountOfFreeCages() {
+    return (_animals.capacity() - _animals.size());
 }
 
-int Zooshop::getAmountOfAnimals() { return _amountOfAnimals; }
-
-Animal* Zooshop::operator[](int id) {
+Animal* Zooshop::operator[](std::size_t id) {
     Animal* ref = _animals[id];
 
     return ref;
@@ -79,12 +82,41 @@ Zooshop& Zooshop::operator=(const Zooshop& original) {
         return *this;
     }
 
+    for (Animal* animal : _animals) {
+        delete animal;
+    }
+
     _animals.clear();
 
     for (Animal* animal : original._animals) {
-        Animal* clone = animal;
+        Animal* clone = animal->clone();
         _animals.push_back(clone);
     }
 
     return *this;
+}
+
+bool operator==(const Zooshop& left, const Zooshop& right) {
+    if (left._animals.size() != right._animals.size()) {
+        return false;
+    }
+
+    std::vector<Animal*> temporaryArray = right._animals;
+
+    for (Animal* animal : left._animals) {
+        std::vector<Animal*>::iterator position =
+            std::find(temporaryArray.begin(), temporaryArray.end(), animal);
+        
+        if (position != temporaryArray.end()) {
+            temporaryArray.erase(position);
+        } else {
+            return false;
+        }
+    }
+
+    if (temporaryArray.size() != 0) {
+        return false;
+    }
+
+    return true;
 }

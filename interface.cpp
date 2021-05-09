@@ -136,7 +136,7 @@ void changeAnimalsSpecie_menuOption(Animal* animal) {
 }
 
 void changeAnimalsAge_menuOption(Animal* animal) {
-    int newAge;
+    uint newAge;
     std::cout << "What is a new age for the animal?" << std::endl;
     std::cin >> newAge;
 
